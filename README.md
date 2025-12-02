@@ -27,11 +27,11 @@ chmod +x rvcinemaview-riscv64
 cat > config.yaml << EOF
 server:
   host: "0.0.0.0"
-  port: 8080
+  port: 6540
 
 library:
-  paths:
-    - "/path/to/your/media"
+  path: "/path/to/your/media"
+  name: "My Media"
 
 database:
   path: "data/library.db"
@@ -49,9 +49,9 @@ EOF
 ### Systemd Service Installation
 
 ```bash
-cd deploy/
+cd server/deploy/
 sudo ./install.sh
-sudo nano /opt/rvcinemaview/config.yaml  # Configure your media paths
+sudo nano /opt/rvcinemaview/config.yaml  # Configure your media path
 sudo systemctl enable rvcinemaview
 sudo systemctl start rvcinemaview
 ```
@@ -96,9 +96,8 @@ cd android
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/v1/health` | Health check |
-| GET | `/api/v1/library` | Get library folders |
-| GET | `/api/v1/folders/{id}` | Get folder details |
-| GET | `/api/v1/folders/{id}/items` | Get folder media items |
+| GET | `/api/v1/library/tree` | Get library folder tree |
+| POST | `/api/v1/library/scan` | Trigger library scan |
 | GET | `/api/v1/media/{id}` | Get media details |
 | GET | `/api/v1/media/{id}/stream` | Stream media file |
 | GET | `/api/v1/media/{id}/thumbnail` | Get thumbnail |
@@ -116,10 +115,8 @@ server:
   write_timeout: 0s        # Response write timeout (0 = unlimited for streaming)
 
 library:
-  paths:                   # Media directories to scan
-    - "/media/movies"
-    - "/media/tv"
-  scan_interval: 1h        # Auto-rescan interval
+  path: "/media/movies"    # Media directory to scan
+  name: "Media Library"    # Display name for the library
 
 database:
   path: "data/library.db"  # SQLite database path
@@ -131,7 +128,7 @@ thumbnails:
 
 logging:
   level: "info"            # Log level: debug, info, warn, error
-  pretty: false            # Human-readable logs
+  pretty: true             # Human-readable logs
 ```
 
 ## License
